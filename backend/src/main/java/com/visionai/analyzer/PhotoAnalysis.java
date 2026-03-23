@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
-import jakarta.persistence.Lob;
 
 @Entity
 public class PhotoAnalysis {
@@ -17,29 +16,27 @@ public class PhotoAnalysis {
     private String originalFilename;
     private int balanceScore;
     private String compositionType;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String strengths; // JSON array of {title, icon, description}
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String suggestions; // JSON array of {title, description}
+    
+    @Column(length = 2000)
+    private String balanceRemarks;
+    
+    @Column(length = 2000)
+    private String linesRemarks;
 
     public PhotoAnalysis() {}
 
-    public PhotoAnalysis(String originalFilename, int balanceScore, String compositionType, String strengths, String suggestions) {
+    public PhotoAnalysis(String originalFilename, int balanceScore, String compositionType, String balanceRemarks, String linesRemarks) {
         this.originalFilename = originalFilename;
         this.balanceScore = balanceScore;
         this.compositionType = compositionType;
-        this.strengths = strengths;
-        this.suggestions = suggestions;
+        this.balanceRemarks = balanceRemarks;
+        this.linesRemarks = linesRemarks;
     }
 
     public Long getId() { return id; }
     public String getOriginalFilename() { return originalFilename; }
     public int getBalanceScore() { return balanceScore; }
     public String getCompositionType() { return compositionType; }
-    public String getStrengths() { return strengths; }
-    public String getSuggestions() { return suggestions; }
+    public String getBalanceRemarks() { return balanceRemarks; }
+    public String getLinesRemarks() { return linesRemarks; }
 }
