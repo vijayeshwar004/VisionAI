@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Composition Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Intelligent analysis of photography composition rules including rule of thirds, leading lines, and balance.">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <header class="navbar">
+        <div class="logo">Vision<span>AI</span></div>
+        <nav>
+            <a href="#analysis">Analysis</a>
+            <a href="#suggestions">Suggestions</a>
+            <button class="btn-primary">Upload New Photo</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="tag">Analysis Complete</div>
+                <h1>Cinematic Landscape Evaluation</h1>
+                <p>We've broken down the composition of your uploaded image. Discover the strengths and learn how to elevate your framing to the next level.</p>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-value">92%</span>
+                        <span class="stat-label">Balance Score</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">Asymmetrical</span>
+                        <span class="stat-label">Composition Type</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <!-- Using a visually similar moody landscape placeholder -->
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop" alt="Cinematic Landscape Photo" class="hero-img">
+                <div class="image-overlay-grid"></div> <!-- For rule of thirds lines visualization -->
+                <div class="focus-point focus-tree"></div> <!-- Highlight focal point -->
+            </div>
+        </section>
+
+        <section id="analysis" class="analysis-section fade-in">
+            <h2>What Works Well</h2>
+            <div class="cards-grid">
+                <div class="glass-card">
+                    <div class="card-icon">⚖️</div>
+                    <h3>Asymmetrical Balance</h3>
+                    <p>The dark, prominent tree acts as a primary focal point on the left. The larger, distant mountain on the right elegantly offsets this visual weight.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">↗️</div>
+                    <h3>Leading Lines</h3>
+                    <p>Rolling hills form gentle diagonals, sloping down to the center. These natural lines guide the eye effortlessly into the distant background.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">🏔️</div>
+                    <h3>Layering and Depth</h3>
+                    <p>Clear definition between the textured foreground, the midground tree, and distant mountains creates a highly expansive, three-dimensional feel.</p>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon">🎞️</div>
+                    <h3>Cinematic Mood</h3>
+                    <p>The soft, diffused overcast lighting and muted earthy tones work harmoniously to produce a highly atmospheric and cinematic aesthetic.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="suggestions" class="suggestions-section fade-in">
+            <h2>Actionable Suggestions</h2>
+            <div class="suggestions-list">
+                <div class="suggestion-item glass-card horizontal">
+                    <div class="suggestion-number">01</div>
+                    <div class="suggestion-content">
+                        <h3>Shift the Horizon Line</h3>
+                        <p>The current horizon perfectly halves the image. Try cropping to place it on the upper or lower third. Since the grass holds beautiful texture, giving the land 2/3 of the frame can make it feel more grounded.</p>
+                    </div>
+                </div>
+                <div class="suggestion-item glass-card horizontal">
+                    <div class="suggestion-number">02</div>
+                    <div class="suggestion-content">
+                        <h3>Enhance the Foreground</h3>
+                        <p>Getting physically lower to include a distinct foreground object (like a rock or flowers) close to the lens would drastically increase the sense of scale and depth.</p>
+                    </div>
+                </div>
+                <div class="suggestion-item glass-card horizontal">
+                    <div class="suggestion-number">03</div>
+                    <div class="suggestion-content">
+                        <h3>Tweak Contrast to Guide the Eye</h3>
+                        <p>While the moody lighting is great, it's slightly flat. Add a subtle vignette in editing to force the eye center-ward. A bump in contrast can also separate the grass from the mountains better.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 VisionAI. Engineered for Visual Excellence.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

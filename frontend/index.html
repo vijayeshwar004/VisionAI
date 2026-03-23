@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Composition Analyzer — VisionAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom.css">
+    <meta name="description" content="AI-powered analysis of photography composition using Google Gemini vision.">
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+const { useState } = React;
+
+function App() {
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
+    const [dragActive, setDragActive] = useState(false);
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setPreview(URL.createObjectURL(selectedFile));
+            setResult(null);
+            setError(null);
+        }
+    };
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+        else if (e.type === "dragleave") setDragActive(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const droppedFile = e.dataTransfer.files[0];
+            setFile(droppedFile);
+            setPreview(URL.createObjectURL(droppedFile));
+            setResult(null);
+            setError(null);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!file) return;
+        setLoading(true);
+        setError(null);
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const response = await axios.post("http://localhost:8080/api/analyze", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                timeout: 60000 // 60s timeout for AI processing
+            });
+
+            // Parse the JSON string fields into actual arrays
+            const data = response.data;
+            data.strengthsArr = typeof data.strengths === 'string' ? JSON.parse(data.strengths) : data.strengths;
+            data.suggestionsArr = typeof data.suggestions === 'string' ? JSON.parse(data.suggestions) : data.suggestions;
+
+            setResult(data);
+        } catch (err) {
+            console.error("Error:", err);
+            const msg = err.response?.data?.error || "Could not reach the backend. Make sure Spring Boot is running on :8080.";
+            setError(msg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleReset = () => {
+        setFile(null);
+        setPreview(null);
+        setResult(null);
+        setError(null);
+    };
+
+    const getScoreColor = (score) => {
+        if (score >= 85) return '#10b981';
+        if (score >= 70) return '#3b82f6';
+        if (score >= 50) return '#f59e0b';
+        return '#ef4444';
+    };
+
+    return (
+        <React.Fragment>
+            <header className="navbar">
+                <div className="logo">Vision<span>AI</span></div>
+                <nav>
+                    {result && <a href="#strengths">Strengths</a>}
+                    {result && <a href="#suggestions">Suggestions</a>}
+                    {result && <button className="btn-primary" onClick={handleReset}>Analyze New Photo</button>}
+                </nav>
+            </header>
+
+            <main className="container">
+                {/* Upload Section */}
+                {!result && (
+                    <section className="upload-hero">
+                        <div className="upload-hero-text">
+                            <div className="tag">AI-Powered • Google Gemini Vision</div>
+                            <h1>Intelligent Photo Composition Analyzer</h1>
+                            <p>Upload any photo and our AI will provide expert-level composition analysis with specific strengths and actionable improvement suggestions.</p>
+                        </div>
+
+                        <div
+                            className={`drop-zone ${dragActive ? "drag-active" : ""} ${preview ? "has-preview" : ""}`}
+                            onDragEnter={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDragOver={handleDrag}
+                            onDrop={handleDrop}
+                        >
+                            {preview ? (
+                                <div className="preview-container">
+                                    <img src={preview} alt="Preview" className="preview-img" />
+                                    <div className="preview-overlay">
+                                        <p className="preview-filename">{file.name}</p>
+                                        <div className="preview-actions">
+                                            <label className="btn-secondary">
+                                                <input type="file" accept="image/*" onChange={handleFileChange} />
+                                                Change
+                                            </label>
+                                            <button className="btn-primary" onClick={handleUpload} disabled={loading}>
+                                                {loading ? (
+                                                    <span className="spinner-text"><span className="spinner"></span> AI Analyzing...</span>
+                                                ) : "Analyze with AI"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <label className="drop-zone-content">
+                                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                                    <div className="drop-icon">📷</div>
+                                    <p className="drop-title">Drag & drop your photo here</p>
+                                    <p className="drop-subtitle">or click to browse</p>
+                                    <span className="drop-formats">Supports JPG, PNG, WEBP</span>
+                                </label>
+                            )}
+                        </div>
+
+                        {error && (
+                            <div className="error-banner">
+                                <span>⚠️</span> {error}
+                            </div>
+                        )}
+                    </section>
+                )}
+
+                {/* Results Section */}
+                {result && (
+                    <React.Fragment>
+                        <section className="hero">
+                            <div className="hero-content">
+                                <div className="tag">AI Analysis Complete</div>
+                                <h1>Composition Report</h1>
+                                <p>Gemini AI analyzed your photo and saved the results (DB #{result.id}). Here's what it found.</p>
+                                <div className="stats-row">
+                                    <div className="stat-item">
+                                        <span className="stat-value" style={{color: getScoreColor(result.balanceScore)}}>{result.balanceScore}/100</span>
+                                        <span className="stat-label">Overall Score</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-value">{result.compositionType}</span>
+                                        <span className="stat-label">Composition Type</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="hero-image-wrapper">
+                                <img src={preview} alt="Analyzed Photo" className="hero-img" />
+                                <div className="image-overlay-grid"></div>
+                            </div>
+                        </section>
+
+                        <section id="strengths" className="analysis-section fade-in visible">
+                            <h2>What AI Found Strong</h2>
+                            <div className="cards-grid">
+                                {result.strengthsArr && result.strengthsArr.map((s, i) => (
+                                    <div className="glass-card" key={i}>
+                                        <div className="card-icon">{s.icon}</div>
+                                        <h3>{s.title}</h3>
+                                        <p>{s.description}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section id="suggestions" className="suggestions-section fade-in visible">
+                            <h2>AI Suggestions for Improvement</h2>
+                            <div className="suggestions-list">
+                                {result.suggestionsArr && result.suggestionsArr.map((s, i) => (
+                                    <div className="suggestion-item glass-card horizontal" key={i}>
+                                        <div className="suggestion-number">{String(i + 1).padStart(2, '0')}</div>
+                                        <div className="suggestion-content">
+                                            <h3>{s.title}</h3>
+                                            <p>{s.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </React.Fragment>
+                )}
+            </main>
+
+            <footer>
+                <p>&copy; 2026 VisionAI. Powered by Google Gemini AI.</p>
+            </footer>
+        </React.Fragment>
+    );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+    </script>
+</body>
+</html>
